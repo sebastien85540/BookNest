@@ -7,59 +7,63 @@ use Illuminate\Http\Request;
 
 class EmpruntController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $emprunts = Emprunt::all();
+
+        return response()->json($emprunts, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|integer',
+            'livre_id' => 'required|integer',
+            'date_emprunt' => 'required|date',
+            'date_retour' => 'nullable|date',
+            'statut' => 'required|in:en_cours,retourne,en_retard',
+        ]);
+
+        $emprunt = Emprunt::create($validated);
+
+        return response()->json($emprunt, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Emprunt $emprunt)
+
+    public function show($id)
     {
-        //
+        $emprunt = Emprunt::findOrFail($id);
+
+        return response()->json($emprunt, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Emprunt $emprunt)
+
+    public function update(Request $request, $id)
     {
-        //
+        $emprunt = Emprunt::findOrFail($id);
+
+        $validated = $request->validate([
+            'user_id' => 'sometimes|integer',
+            'livre_id' => 'sometimes|integer',
+            'date_emprunt' => 'sometimes|date',
+            'date_retour' => 'nullable|date',
+            'statut' => 'sometimes|in:en_cours,retourne,en_retard',
+        ]);
+
+        $emprunt->update($validated);
+
+        return response()->json($emprunt, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Emprunt $emprunt)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Emprunt $emprunt)
+    public function destroy($id)
     {
-        //
+        $emprunt = Emprunt::findOrFail($id);
+
+        $emprunt->delete();
+
+        return response()->json(null, 204);
     }
 }
