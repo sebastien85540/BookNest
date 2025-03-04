@@ -21,9 +21,9 @@ class EmpruntController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|integer',
             'livre_id' => 'required|integer',
-            'date_emprunt' => 'required|date',
+            'date_emprunt' => 'nullable|date',
             'date_retour' => 'nullable|date',
-            'statut' => 'required|in:en_cours,retourne,en_retard',
+            'statut' => 'required|in:dispo,en_cours,retourne,en_retard',
         ]);
 
         $emprunt = Emprunt::create($validated);
@@ -48,8 +48,8 @@ class EmpruntController extends Controller
             'user_id' => 'sometimes|integer',
             'livre_id' => 'sometimes|integer',
             'date_emprunt' => 'sometimes|date',
-            'date_retour' => 'nullable|date',
-            'statut' => 'sometimes|in:en_cours,retourne,en_retard',
+            'date_retour' => 'sometimes|date',
+            'statut' => 'sometimes|in:dispo,en_cours,retourne,en_retard',
         ]);
 
         $emprunt->update($validated);
