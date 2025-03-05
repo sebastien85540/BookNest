@@ -14,7 +14,7 @@ class EmpruntTest extends TestCase
     /** @test */
     public function TC001_CreationEmpruntValide()
     {
-        $response = $this->postJson('/emprunts', [
+        $response = $this->postJson('/api/emprunts', [
             'user_id' => 10,
             'livre_id' => 5,
             'date_emprunt' => '2025-03-10T09:00:00',
@@ -29,7 +29,7 @@ class EmpruntTest extends TestCase
     /** @test */
     public function TC002_CreationInvalideChampManquant()
     {
-        $response = $this->postJson('/emprunts', [
+        $response = $this->postJson('/api/emprunts', [
             'livre_id' => 5,
             'date_emprunt' => '2025-03-10T09:00:00',
             'statut' => 'en_cours',
@@ -44,7 +44,7 @@ class EmpruntTest extends TestCase
     {
         $emprunt = Emprunt::factory()->create();
 
-        $response = $this->getJson("/emprunts/{$emprunt->id}");
+        $response = $this->getJson("/api/emprunts/{$emprunt->id}");
 
         $response->assertStatus(200)
             ->assertJsonFragment(['id' => $emprunt->id]);
@@ -53,7 +53,7 @@ class EmpruntTest extends TestCase
     /** @test */
     public function TC004_LectureEmpruntIntrouvable()
     {
-        $response = $this->getJson('/emprunts/9999');
+        $response = $this->getJson('/api/emprunts/9999');
 
         $response->assertStatus(404);
     }
@@ -65,7 +65,7 @@ class EmpruntTest extends TestCase
             'statut' => 'en_cours'
         ]);
 
-        $response = $this->putJson("/emprunts/{$emprunt->id}", [
+        $response = $this->putJson("/api/emprunts/{$emprunt->id}", [
             'date_retour' => '2025-03-12T14:00:00',
             'statut' => 'retourne',
         ]);
@@ -79,7 +79,7 @@ class EmpruntTest extends TestCase
     {
         $emprunt = Emprunt::factory()->create();
 
-        $response = $this->putJson("/emprunts/{$emprunt->id}", [
+        $response = $this->putJson("/api/emprunts/{$emprunt->id}", [
             'date_emprunt' => 'abc',
         ]);
 
@@ -92,7 +92,7 @@ class EmpruntTest extends TestCase
     {
         $emprunt = Emprunt::factory()->create();
 
-        $response = $this->deleteJson("/emprunts/{$emprunt->id}");
+        $response = $this->deleteJson("/api/emprunts/{$emprunt->id}");
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('emprunts', ['id' => $emprunt->id]);
@@ -101,7 +101,7 @@ class EmpruntTest extends TestCase
     /** @test */
     public function TC008_SuppressionEmpruntInexistant()
     {
-        $response = $this->deleteJson('/emprunts/9999');
+        $response = $this->deleteJson('/api/emprunts/9999');
 
         $response->assertStatus(404);
     }
