@@ -3,7 +3,7 @@ name: Laravel CI/CD
 on:
   push:
     branches:
-      - dev
+      - dev  # Déclenchement lors d'un push sur la branche dev
 
 jobs:
   build-and-test:
@@ -32,23 +32,27 @@ jobs:
 
   deploy:
     needs: build-and-test
-    if: success()
+    if: success()  # Si la CI réussie, on lance le déploiement
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Cloner le repo
         uses: actions/checkout@v4
 
+      - name: 🚀 Récupérer toutes les branches et changer vers `main`
+        run: |
+          git fetch --all  # Récupérer toutes les branches du repo
+          git checkout main || git checkout -b main  # Si la branche `main` n'existe pas, la créer
+
       - name: 🚀 Fusionner `dev` dans `main`
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git checkout main
-          git merge --ff-only origin/dev
-          git push origin main
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          git merge --ff-only origin/dev  # Fusionner dev dans main
+          git push origin main  # Push de la branche main mise à jour
+
           #      - name: 📤 Déploiement sur le serveur
         #        run: |
-          #          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
+#          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
+          
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Utiliser le token pour l'authentification GitHub
 
