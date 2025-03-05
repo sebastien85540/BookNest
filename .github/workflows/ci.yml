@@ -1,80 +1,54 @@
-name: Laravel CI/CD Pipeline
+name: CI/CD Laravel
 
 on:
   push:
     branches:
-      - dev   # Déclenche le pipeline quand tu pousses sur la branche dev
+      - dev  # Déclenchement sur dev
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: booknest
-        ports:
-          - 3306:3306
-        options: --health-cmd='mysqladmin ping --silent' --health-interval=10s --health-timeout=5s --health-retries=3
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build Docker containers
-        run: |
-          docker-compose -f docker-compose.yml up -d --build
-
-      - name: Install dependencies
-        run: docker-compose exec app composer install --no-dev --optimize-autoloader
-
-      - name: Run migrations
-        run: docker-compose exec app php artisan migrate --seed
-
-      - name: Run tests
-        run: docker-compose exec app php artisan test
-
-  merge_to_main:
-    needs: build  # Ce job se lance uniquement si 'build' réussit
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 📥 Récupération du code
         uses: actions/checkout@v3
 
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+      - name: 🐳 Démarrage des services avec Docker Compose
+        run: docker-compose up -d
 
-      - name: Merge dev into main
-        run: |
-          git checkout main
-          git pull origin main
-          git merge dev --no-ff -m "Merge dev into main after CI pass"
-          git push origin main
+      - name: 🕐 Attente du démarrage des services
+        run: sleep 15s  # Attendre que MySQL et Laravel démarrent
 
-          #  deploy:
-          #    needs: merge_to_main  # Ce job se lance uniquement après la fusion réussie
+      - name: 📦 Installation des dépendances
+        run: docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: 🔑 Génération de la clé d'application Laravel
+        run: docker-compose exec -T app php artisan key:generate
+
+      - name: 🏗️ Exécution des migrations
+        run: docker-compose exec -T app php artisan migrate --force
+
+      - name: ✅ Exécution des tests Laravel
+        run: docker-compose exec -T app php artisan test
+
+          #  merge-and-deploy:
+          #    needs: build-and-test
           #    runs-on: ubuntu-latest
+          #    if: success()
 
           #    steps:
-          #      - name: Checkout code
+          #      - name: 📥 Checkout du code
           #        uses: actions/checkout@v3
 
-          #      - name: Configure SSH
-          #        uses: appleboy/ssh-action@master
-          #        with:
-          #          host: ${{ secrets.SSH_HOST }}
-          #          username: ${{ secrets.SSH_USER }}
-          #          password: ${{ secrets.SSH_PASS }}
-          #          script: |
-          #            cd /var/www/booknest
-          #            git pull origin main
-          #            docker-compose up --build -d
-          #            docker-compose exec app php artisan migrate --force
+          #      - name: 🔄 Fusion de dev vers main
+          #        run: |
+          #          git config --global user.name "github-actions[bot]"
+          #          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          #          git checkout main
+          #          git merge dev --no-ff --allow-unrelated-histories -m "Auto-merge dev into main"
+          #          git push origin main
+
+          #      - name: 🚀 Déploiement sur le serveur
+          #        run: |
+          #          ssh user@server "cd /chemin/projet && git pull origin main && docker-compose up -d --build"
 
