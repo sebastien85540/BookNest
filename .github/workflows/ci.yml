@@ -1,46 +1,36 @@
-name: Laravel CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - dev
+      - dev  # Déclenchement lorsque la branche `dev` est mise à jour
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Cloner le repo
-        uses: actions/checkout@v4
-
-      - name: 🔨 Construire les conteneurs
-        run: docker compose up -d --build
-
-      - name: 🚀 Vérifier que MySQL est prêt
-        run: |
-          sleep 10
-          docker compose exec -T db mysqladmin ping -h db -uroot -proot
-
-      - name: 📦 Installer les dépendances Composer
-        run: docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: 🔄 Lancer les migrations
-        run: docker compose exec -T app php artisan migrate --force
-
-      - name: ✅ Lancer les tests Laravel
-        run: docker compose exec -T app php artisan test
-
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        ref: dev  # On s'assure de récupérer la branche dev
 
-    - name: Set up Git
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'  # ou la version de PHP que tu utilises
+
+    - name: Install dependencies
       run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "github-actions@github.com"
+        composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Set up Docker Compose
+      run: |
+        docker-compose -f docker-compose.yml up -d --build
+
+    - name: Run tests
+      run: |
+        docker-compose exec -T app vendor/bin/phpunit  # Exécuter les tests Laravel
 
     - name: Merge dev into main
       run: |
@@ -52,8 +42,9 @@ jobs:
       run: |
         git push https://github.com/sebastien85540/BookNest.git HEAD:main
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          #      - name: 📤 Déploiement sur le serveur
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Token d'accès personnel que tu as ajouté dans les secrets
+
+#      - name: 📤 Déploiement sur le serveur
         #        run: |
           #          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
 
