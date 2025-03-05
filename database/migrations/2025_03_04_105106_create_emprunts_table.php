@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('livre_id');
-            $table->date('date_emprunt');
+            $table->timestamp('date_emprunt');
             $table->date('date_retour')->nullable();
-            $table->enum('statut', ['en_cours', 'retourne', 'en_retard']);
+            $table->enum('statut', ['dispo', 'en_cours', 'retourne', 'en_retard'])->default('dispo');
             $table->timestamps();
         });
     }
