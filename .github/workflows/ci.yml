@@ -30,7 +30,7 @@ jobs:
       - name: ✅ Lancer les tests Laravel
         run: docker compose exec -T app php artisan test
 
-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
