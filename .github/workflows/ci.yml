@@ -28,9 +28,6 @@ jobs:
       - name: 🕐 Attente du démarrage des services
         run: sleep 15s  # Attendre que MySQL et Laravel démarrent
 
-      - name: Vérification des conteneurs en cours d'exécution
-         run: docker ps -a
-
       - name: 📦 Installation des dépendances
         run: docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
 
