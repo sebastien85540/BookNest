@@ -35,6 +35,10 @@ jobs:
     if: success()  # Si la CI réussie, on lance le déploiement
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pages: write
+
     steps:
       - name: 📥 Cloner le repo
         uses: actions/checkout@v4
