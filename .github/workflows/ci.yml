@@ -36,8 +36,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      pages: write
+      contents: write
+      pull-requests: write
 
     steps:
       - name: 📥 Cloner le repo
