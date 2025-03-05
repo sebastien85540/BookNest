@@ -1,0 +1,237 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Gestion des Emprunts",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/emprunts": {
+            "get": {
+                "tags": [
+                    "Emprunts"
+                ],
+                "summary": "Liste tous les emprunts",
+                "operationId": "6a9fb86e08bf7412c40b107c4c4ccc14",
+                "responses": {
+                    "200": {
+                        "description": "Liste des emprunts récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Emprunt"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Emprunts"
+                ],
+                "summary": "Créer un nouvel emprunt",
+                "operationId": "146b2729be722871ec4978904a393309",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Emprunt"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Emprunt créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Emprunt"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/emprunts/{id}": {
+            "get": {
+                "tags": [
+                    "Emprunts"
+                ],
+                "summary": "Affiche un emprunt spécifique",
+                "operationId": "8b1ec99087304ab50582736b7738d1bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'emprunt",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Emprunt trouvé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Emprunt"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Emprunts"
+                ],
+                "summary": "Mettre à jour un emprunt",
+                "operationId": "313492ed823238c64fcc8ad63138cab6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'emprunt",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "livre_id": {
+                                        "type": "integer"
+                                    },
+                                    "date_emprunt": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "date_retour": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "statut": {
+                                        "type": "string",
+                                        "enum": [
+                                            "dispo",
+                                            "en_cours",
+                                            "retourne",
+                                            "en_retard"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Emprunt mis à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Emprunt"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Emprunt non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Emprunts"
+                ],
+                "summary": "Supprimer un emprunt",
+                "operationId": "4b11b5a39be3f1d1e93a769790b16631",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'emprunt",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Emprunt supprimé avec succès"
+                    },
+                    "404": {
+                        "description": "Emprunt non trouvé"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Emprunt": {
+                "title": "Emprunt",
+                "description": "Modèle d'emprunt",
+                "properties": {
+                    "id": {
+                        "description": "ID de l'emprunt",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "description": "ID de l'utilisateur",
+                        "type": "integer"
+                    },
+                    "livre_id": {
+                        "description": "ID du livre",
+                        "type": "integer"
+                    },
+                    "date_emprunt": {
+                        "description": "Date de l'emprunt",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "date_retour": {
+                        "description": "Date de retour prévue",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "statut": {
+                        "description": "Statut de l'emprunt",
+                        "type": "string",
+                        "enum": [
+                            "dispo",
+                            "en_cours",
+                            "retourne",
+                            "en_retard"
+                        ]
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Emprunts",
+            "description": "Emprunts"
+        }
+    ]
+}
