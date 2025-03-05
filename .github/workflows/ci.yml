@@ -14,10 +14,22 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 🐳 Démarrage des services avec Docker Compose
-        run: docker compose up -d
+        run: |
+          docker compose down --volumes --remove-orphans 
+          docker compose up -d
+          sleep 10
+
+      - name: 🔍 Vérification des logs des services
+        run: docker compose logs
+
+      - name: Vérification des conteneurs en cours d'exécution
+        run: docker ps -a
 
       - name: 🕐 Attente du démarrage des services
         run: sleep 15s  # Attendre que MySQL et Laravel démarrent
+
+      - name: Vérification des conteneurs en cours d'exécution
+         run: docker ps -a
 
       - name: 📦 Installation des dépendances
         run: docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
