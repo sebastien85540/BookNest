@@ -57,7 +57,6 @@ class EmpruntController extends Controller
         return response()->json($emprunt, 200);
     }
 
-
     public function destroy($id)
     {
         $emprunt = Emprunt::findOrFail($id);
