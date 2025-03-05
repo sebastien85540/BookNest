@@ -1,50 +1,54 @@
-name: CI/CD Pipeline
+name: Laravel CI/CD
 
 on:
   push:
     branches:
-      - dev  # Déclenchement lorsque la branche `dev` est mise à jour
+      - dev
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        ref: dev  # On s'assure de récupérer la branche dev
+      - name: 📥 Cloner le repo
+        uses: actions/checkout@v4
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'  # ou la version de PHP que tu utilises
+      - name: 🔨 Construire les conteneurs
+        run: docker compose up -d --build
 
-    - name: Install dependencies
-      run: |
-        composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: 🚀 Vérifier que MySQL est prêt
+        run: |
+          sleep 10
+          docker compose exec -T db mysqladmin ping -h db -uroot -proot
 
-    - name: Set up Docker Compose
-      run: |
-        docker-compose -f docker-compose.yml up -d --build
+      - name: 📦 Installer les dépendances Composer
+        run: docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
 
-    - name: Run tests
-      run: |
-        docker-compose exec -T app vendor/bin/phpunit  # Exécuter les tests Laravel
+      - name: 🔄 Lancer les migrations
+        run: docker compose exec -T app php artisan migrate --force
 
-    - name: Merge dev into main
-      run: |
-        git fetch origin main
-        git checkout main
-        git merge dev --no-ff --allow-unrelated-histories --strategy=recursive -X theirs
+      - name: ✅ Lancer les tests Laravel
+        run: docker compose exec -T app php artisan test
 
-    - name: Push changes to main
-      run: |
-        git push https://github.com/sebastien85540/BookNest.git HEAD:main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Token d'accès personnel que tu as ajouté dans les secrets
+  deploy:
+    needs: build-and-test
+    if: success()
+    runs-on: ubuntu-latest
 
-#      - name: 📤 Déploiement sur le serveur
+    steps:
+      - name: 📥 Cloner le repo
+        uses: actions/checkout@v4
+
+      - name: 🚀 Fusionner `dev` dans `main`
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git checkout main
+          git merge --ff-only origin/dev
+          git push origin main
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          #      - name: 📤 Déploiement sur le serveur
         #        run: |
           #          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
 
