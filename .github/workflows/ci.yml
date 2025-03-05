@@ -30,24 +30,29 @@ jobs:
       - name: ✅ Lancer les tests Laravel
         run: docker compose exec -T app php artisan test
 
-  deploy:
-    needs: build-and-test
-    if: success()
+deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Cloner le repo
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: 🚀 Fusionner `dev` dans `main`
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git fetch origin main
-          git checkout main
-          git merge dev --no-ff --allow-unrelated-histories         
-          git push origin main
+    - name: Set up Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "github-actions@github.com"
 
+    - name: Merge dev into main
+      run: |
+        git fetch origin main
+        git checkout main
+        git merge dev --no-ff --allow-unrelated-histories --strategy=recursive -X theirs
+
+    - name: Push changes to main
+      run: |
+        git push https://github.com/sebastien85540/BookNest.git HEAD:main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           #      - name: 📤 Déploiement sur le serveur
         #        run: |
           #          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
