@@ -1,0 +1,80 @@
+name: Laravel CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - dev   # Déclenche le pipeline quand tu pousses sur la branche dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: booknest
+        ports:
+          - 3306:3306
+        options: --health-cmd='mysqladmin ping --silent' --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker containers
+        run: |
+          docker-compose -f docker-compose.yml up -d --build
+
+      - name: Install dependencies
+        run: docker-compose exec app composer install --no-dev --optimize-autoloader
+
+      - name: Run migrations
+        run: docker-compose exec app php artisan migrate --seed
+
+      - name: Run tests
+        run: docker-compose exec app php artisan test
+
+  merge_to_main:
+    needs: build  # Ce job se lance uniquement si 'build' réussit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Merge dev into main
+        run: |
+          git checkout main
+          git pull origin main
+          git merge dev --no-ff -m "Merge dev into main after CI pass"
+          git push origin main
+
+          #  deploy:
+          #    needs: merge_to_main  # Ce job se lance uniquement après la fusion réussie
+          #    runs-on: ubuntu-latest
+
+          #    steps:
+          #      - name: Checkout code
+          #        uses: actions/checkout@v3
+
+          #      - name: Configure SSH
+          #        uses: appleboy/ssh-action@master
+          #        with:
+          #          host: ${{ secrets.SSH_HOST }}
+          #          username: ${{ secrets.SSH_USER }}
+          #          password: ${{ secrets.SSH_PASS }}
+          #          script: |
+          #            cd /var/www/booknest
+          #            git pull origin main
+          #            docker-compose up --build -d
+          #            docker-compose exec app php artisan migrate --force
+
