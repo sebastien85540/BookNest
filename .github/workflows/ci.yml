@@ -46,7 +46,7 @@ jobs:
 
       - name: 🚀 Fusionner `dev` dans `main`
         run: |
-          git merge --ff-only origin/dev  # Fusionner dev dans main
+          git merge dev --no-ff --allow-unrelated-histories  # Fusionner dev dans main
           git push origin main  # Push de la branche main mise à jour
 
           #      - name: 📤 Déploiement sur le serveur
