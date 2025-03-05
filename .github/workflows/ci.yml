@@ -58,23 +58,23 @@ jobs:
           git merge dev --no-ff -m "Merge dev into main after CI pass"
           git push origin main
 
-  deploy:
-    needs: merge_to_main  # Ce job se lance uniquement après la fusion réussie
-    runs-on: ubuntu-latest
+          #  deploy:
+          #    needs: merge_to_main  # Ce job se lance uniquement après la fusion réussie
+          #    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+          #    steps:
+          #      - name: Checkout code
+          #        uses: actions/checkout@v3
 
-      - name: Configure SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASS }}
-          script: |
-            cd /var/www/booknest
-            git pull origin main
-            docker-compose up --build -d
-            docker-compose exec app php artisan migrate --force
+          #      - name: Configure SSH
+          #        uses: appleboy/ssh-action@master
+          #        with:
+          #          host: ${{ secrets.SSH_HOST }}
+          #          username: ${{ secrets.SSH_USER }}
+          #          password: ${{ secrets.SSH_PASS }}
+          #          script: |
+          #            cd /var/www/booknest
+          #            git pull origin main
+          #            docker-compose up --build -d
+          #            docker-compose exec app php artisan migrate --force
 
