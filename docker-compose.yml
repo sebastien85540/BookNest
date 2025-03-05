@@ -4,36 +4,34 @@ services:
     app:
         build: .
         container_name: laravel_app
-        restart: always
-        working_dir: /var/www/html
-        volumes:
-            - .:/var/www/html
         ports:
-            - "8000:80"
+            - "8000:8000"
         depends_on:
             - mysql
+        volumes:
+            - .:/var/www
         environment:
-            - APP_ENV=local
-            - APP_DEBUG=true
-            - APP_KEY=${APP_KEY}
-            - DB_CONNECTION=mysql
-            - DB_HOST=mysql
-            - DB_PORT=3306
-            - DB_DATABASE=booknest
-            - DB_USERNAME=root
-            - DB_PASSWORD=root
+            APP_ENV: testing
+            APP_KEY:
+            DB_CONNECTION: mysql
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: booknest
+            DB_USERNAME: root
+            DB_PASSWORD: root
 
     mysql:
         image: mysql:8.0
         container_name: laravel_db
-        restart: always
-        environment:
-            MYSQL_DATABASE: booknest
-            MYSQL_ROOT_PASSWORD: root
         ports:
             - "3306:3306"
-        volumes:
-            - db_data:/var/lib/mysql
-
-volumes:
-    db_data:
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: booknest
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            retries: 3
+            start_period: 30s
