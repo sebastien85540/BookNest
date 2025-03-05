@@ -1,16 +1,24 @@
 FROM php:8.2-fpm
 
-WORKDIR /var/www
-
+# Installer les extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd \
-    && docker-php-ext-install gd pdo pdo_mysql bcmath
+    libpng-dev libjpeg-dev libfreetype6-dev zip unzip git curl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql gd
 
+# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Définir le dossier de travail
+WORKDIR /var/www
+
+# Copier le projet Laravel
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+# Installer les dépendances
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Donner les permissions à Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+CMD ["php-fpm"]
