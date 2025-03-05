@@ -14,22 +14,22 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 🐳 Démarrage des services avec Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: 🕐 Attente du démarrage des services
         run: sleep 15s  # Attendre que MySQL et Laravel démarrent
 
       - name: 📦 Installation des dépendances
-        run: docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: 🔑 Génération de la clé d'application Laravel
-        run: docker-compose exec -T app php artisan key:generate
+        run: docker compose exec -T app php artisan key:generate
 
       - name: 🏗️ Exécution des migrations
-        run: docker-compose exec -T app php artisan migrate --force
+        run: docker compose exec -T app php artisan migrate --force
 
       - name: ✅ Exécution des tests Laravel
-        run: docker-compose exec -T app php artisan test
+        run: docker compose exec -T app php artisan test
 
           #  merge-and-deploy:
           #    needs: build-and-test
