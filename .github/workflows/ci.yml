@@ -38,6 +38,11 @@ jobs:
     steps:
       - name: 📥 Cloner le repo
         uses: actions/checkout@v4
+      
+      - name: 🚀 Configurer Git pour les actions
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"    
 
       - name: 🚀 Récupérer toutes les branches et changer vers `main`
         run: |
