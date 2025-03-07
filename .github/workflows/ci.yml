@@ -68,7 +68,7 @@ jobs:
 
       - name: 📤 Déploiement sur le serveur
         run: |
-          ssh ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "cd /var/www/html/BookNest && git pull origin main && docker compose up -d --build"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "cd /var/www/html/BookNest && git pull origin main && docker compose up -d --build"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Utiliser le token pour l'authentification GitHub
