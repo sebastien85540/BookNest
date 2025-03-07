@@ -34,7 +34,6 @@ jobs:
     needs: build-and-test
     if: success()  # Si la CI réussie, on lance le déploiement
     runs-on: ubuntu-latest
-    variables:
 
     permissions:
       contents: write
