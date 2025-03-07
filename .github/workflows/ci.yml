@@ -58,14 +58,13 @@ jobs:
           git merge dev --no-ff --allow-unrelated-histories --strategy=recursive -X theirs # Fusionner dev dans main
           git push origin main  # Push de la branche main mise à jour
 
-      - name: 🛠️ Préparer SSH
+      - name: 🛠 Préparer SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.IP_SSH }} >> ~/.ssh/known_hosts
-          ssh -v -i ~/.ssh/id_rsa -o PreferredAuthentications=publickey -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "echo 'Connexion réussie !'"
-
 
       - name: 🛠 Tester la connexion SSH avec logs
         run: |
