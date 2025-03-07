@@ -34,6 +34,7 @@ jobs:
     needs: build-and-test
     if: success()  # Si la CI réussie, on lance le déploiement
     runs-on: ubuntu-latest
+    variables:
 
     permissions:
       contents: write
@@ -42,11 +43,11 @@ jobs:
     steps:
       - name: 📥 Cloner le repo
         uses: actions/checkout@v4
-      
+
       - name: 🚀 Configurer Git pour les actions
         run: |
           git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"    
+          git config --global user.email "actions@github.com"
 
       - name: 🚀 Récupérer toutes les branches et changer vers `main`
         run: |
@@ -58,10 +59,10 @@ jobs:
           git merge dev --no-ff --allow-unrelated-histories --strategy=recursive -X theirs # Fusionner dev dans main
           git push origin main  # Push de la branche main mise à jour
 
-          #      - name: 📤 Déploiement sur le serveur
-        #        run: |
-#          ssh user@your-server "cd /path/to/laravel && git pull origin main && docker compose up -d --build"
-          
+      - name: 📤 Déploiement sur le serveur
+        run: |
+          ssh ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "cd /var/www/html/BookNest && git pull origin main && docker compose up -d --build"
+
 env:
   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Utiliser le token pour l'authentification GitHub
 
