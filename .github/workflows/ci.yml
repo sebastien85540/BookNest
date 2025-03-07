@@ -83,7 +83,7 @@ jobs:
 
       - name: 📤 Déploiement sur le serveur
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ***@*** "
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "
           cd /var/www/html/BookNest &&
           git config --global --add safe.directory /var/www/html/BookNest &&
           git pull origin main &&
@@ -96,5 +96,4 @@ env:
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   USER_SSH: ${{ secrets.USER_SSH }}
   IP_SSH: ${{ secrets.IP_SSH }}
-  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
