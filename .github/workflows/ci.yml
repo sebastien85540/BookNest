@@ -65,6 +65,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.IP_SSH }} >> ~/.ssh/known_hosts
 
+      - name: 🛠 Tester la connexion SSH
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "echo 'Connexion réussie !'"
 
       - name: 📤 Déploiement sur le serveur
         run: |
