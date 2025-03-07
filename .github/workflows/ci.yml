@@ -87,7 +87,7 @@ jobs:
           cd /var/www/html/BookNest &&
           git config --global --add safe.directory /var/www/html/BookNest &&
           git pull origin main &&
-          sudo docker compose up -d --force-recreate --no-deps --build
+          sudo docker compose up --force-recreate --no-deps --build
           "
 
 
