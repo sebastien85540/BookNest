@@ -75,4 +75,7 @@ jobs:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Utiliser le token pour l'authentification GitHub
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  USER_SSH: ${{ secrets.USER_SSH }}
+  IP_SSH: ${{ secrets.IP_SSH }}
 
