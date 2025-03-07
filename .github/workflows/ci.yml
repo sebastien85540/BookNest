@@ -60,11 +60,22 @@ jobs:
 
       - name: 🛠 Préparer SSH
         run: |
+          # Créer le répertoire .ssh s'il n'existe pas
           mkdir -p ~/.ssh
+
+          # Ajouter la clé privée
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+          # Démarrer l'agent SSH
+          eval $(ssh-agent -s)
+
+          # Ajouter la clé SSH à l'agent, en passant la passphrase si nécessaire
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
+
+          # Ajouter la clé de l'hôte distant pour éviter les problèmes de sécurité
           ssh-keyscan -H ${{ secrets.IP_SSH }} >> ~/.ssh/known_hosts
+
 
       - name: 🛠 Tester la connexion SSH avec logs
         run: |
