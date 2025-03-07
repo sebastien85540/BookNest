@@ -64,10 +64,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.IP_SSH }} >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts  # Vérifie si la clé est bien ajoutée
 
-      - name: 🛠 Tester la connexion SSH
+      - name: 🛠 Tester la connexion SSH avec logs
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "echo 'Connexion réussie !'"
+          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "echo 'Connexion réussie !'"
 
       - name: 📤 Déploiement sur le serveur
         run: |
