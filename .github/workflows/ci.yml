@@ -87,8 +87,9 @@ jobs:
           cd /var/www/html/BookNest &&
           git config --global --add safe.directory /var/www/html/BookNest &&
           git pull origin main &&
-          docker compose up -d --build
+          sudo docker compose up -d --build
           "
+
 
 env:
   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Utiliser le token pour l'authentification GitHub
