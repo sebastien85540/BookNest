@@ -90,4 +90,5 @@ env:
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   USER_SSH: ${{ secrets.USER_SSH }}
   IP_SSH: ${{ secrets.IP_SSH }}
+  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
