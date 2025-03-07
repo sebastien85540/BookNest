@@ -83,11 +83,11 @@ jobs:
 
       - name: 📤 Déploiement sur le serveur
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ***@*** "
           cd /var/www/html/BookNest &&
           git config --global --add safe.directory /var/www/html/BookNest &&
           git pull origin main &&
-          sudo docker compose up --build
+          sudo docker compose up --force-recreate --no-deps --build
           "
 
 
