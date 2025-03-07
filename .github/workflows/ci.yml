@@ -58,6 +58,10 @@ jobs:
           git merge dev --no-ff --allow-unrelated-histories --strategy=recursive -X theirs # Fusionner dev dans main
           git push origin main  # Push de la branche main mise à jour
 
+      - name: 🔑 Ajouter le serveur SSH aux hôtes connus
+        run: |
+          ssh-keyscan -H ${{ secrets.IP_SSH }} >> ~/.ssh/known_hosts
+
       - name: 📤 Déploiement sur le serveur
         run: |
           ssh ${{ secrets.USER_SSH }}@${{ secrets.IP_SSH }} "cd /var/www/html/BookNest && git pull origin main && docker compose up -d --build"
